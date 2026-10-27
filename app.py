@@ -184,13 +184,17 @@ with tab1:
 # PESTAÑA 2: MACHINE LEARNING
 with tab2:
     st.markdown("### 🧠 Segmentación de Territorios (Clustering)")
-    st.write("Identifica similitudes ocultas entre departamentos cruzando múltiples indicadores económicos al mismo tiempo.")
+    st.write("**¿Qué hace esta sección?** Utilizamos minería de datos (algoritmo **K-Means**) para encontrar patrones ocultos y agrupar automáticamente los departamentos que tienen condiciones económicas y sociales similares. Además, usamos **PCA** (Análisis de Componentes Principales) para resumir todas las variables cruzadas en un gráfico 2D fácil de interpretar.")
 
     col_ml1, col_ml2 = st.columns([1, 2.5])
 
     with col_ml1:
         st.markdown("#### Configuración del Modelo")
         inds_ml = st.multiselect("Variables a cruzar", lista_inds, default=lista_inds[:3], key="ml_inds")
+        
+        # Selector de departamentos exclusivo para Minería de Datos
+        deptos_ml = st.multiselect("Departamentos a analizar", ["Todos"] + lista_deptos, default=["Todos"], key="ml_deptos")
+        
         anio_ml = st.slider("Año de corte transversal", 2010, 2023, 2022, key="ml_anio")
         n_clusters = st.slider("Número de Clústeres (Grupos)", 2, 6, 3)
         ejecutar_ml = st.button("🚀 Ejecutar Modelo", use_container_width=True)
@@ -200,9 +204,15 @@ with tab2:
             if len(inds_ml) < 2:
                 st.error("⚠️ Debes seleccionar al menos 2 indicadores para ejecutar el modelo de Machine Learning.")
             else:
-                pivot = DB_MAESTRA[(DB_MAESTRA["anio"] == anio_ml) & (DB_MAESTRA["indicador"].isin(inds_ml))].pivot(index="departamento", columns="indicador", values="valor").dropna()
-                if len(pivot) < n_clusters + 2:
-                    st.warning("⚠️ No hay suficientes datos continuos en ese año para realizar el cruce. Intenta con otros indicadores u otro año.")
+                # Filtrar la base de datos según los departamentos seleccionados
+                df_ml = DB_MAESTRA.copy()
+                if "Todos" not in deptos_ml and deptos_ml:
+                    df_ml = df_ml[df_ml["departamento"].isin(deptos_ml)]
+                    
+                pivot = df_ml[(df_ml["anio"] == anio_ml) & (df_ml["indicador"].isin(inds_ml))].pivot(index="departamento", columns="indicador", values="valor").dropna()
+                
+                if len(pivot) < n_clusters or len(pivot) < 3:
+                    st.warning(f"⚠️ No hay suficientes departamentos con datos para crear {n_clusters} grupos. Selecciona más departamentos en el filtro (al menos {max(n_clusters, 3)}) o cambia el año.")
                 else:
                     tab_clust, tab_corr = st.tabs(["🎯 Segmentación K-Means", "🔗 Mapa de Correlaciones"])
 
@@ -221,8 +231,9 @@ with tab2:
                         st.plotly_chart(fig_cluster, use_container_width=True)
 
                         var_exp = pca.explained_variance_ratio_ * 100
-                        st.success(f"**Interpretación:** Los departamentos con el mismo color pertenecen al mismo clúster socioeconómico. El gráfico logró capturar y resumir el **{var_exp[0]+var_exp[1]:.1f}%** de la información de todas las variables seleccionadas.")
+                        st.success(f"**Interpretación del Modelo:** Los departamentos agrupados bajo el mismo color comparten características socioeconómicas similares. El algoritmo K-Means identificó {n_clusters} perfiles distintos, y el gráfico resume el **{var_exp[0]+var_exp[1]:.1f}%** de toda la información cruzada.")
 
                     with tab_corr:
+                        st.info("**¿Qué significa esto?** El mapa de calor muestra cómo se relacionan los indicadores entre sí. Los tonos rojos indican una relación directa (si uno sube, el otro también). Los tonos azules indican una relación inversa (si uno sube, el otro baja).")
                         fig_corr = px.imshow(pivot.corr().round(2), text_auto=True, aspect="auto", color_continuous_scale="RdBu_r", origin="lower")
                         st.plotly_chart(fig_corr, use_container_width=True)
