@@ -19,7 +19,7 @@ warnings.filterwarnings("ignore")
 # 1. CONFIGURACIÓN DE PÁGINA Y NORMALIZACIÓN
 # ============================================================
 st.set_page_config(
-    page_title="Plataforma de Análisis Económico", 
+    page_title="Observatorio Económico y Social", 
     page_icon="🇨🇴", 
     layout="wide",
     initial_sidebar_state="expanded"
