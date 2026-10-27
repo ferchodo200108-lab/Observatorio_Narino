@@ -127,7 +127,7 @@ def consultar_glosario(indicador):
 # --- MENSAJE DE BIENVENIDA INMERSIVO ---
 st.markdown("""
 <div style='background: linear-gradient(135deg, #1f4037 0%, #99f2c8 100%); padding: 30px; border-radius: 15px; text-align: center; margin-bottom: 25px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);'>
-    <h1 style='color: white; margin:0; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);'>👋 ¡Bienvenido al Observatorio Económico Territorial!</h1>
+    <h1 style='color: white; margin:0; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);'>👋 ¡Bienvenido al Observatorio Económico y Social!</h1>
     <p style='color: #f1f1f1; font-size: 1.2em; margin-top: 10px;'>Explora, analiza y comprende las dinámicas socioeconómicas de los departamentos de Colombia mediante datos estructurados y modelos de Inteligencia Artificial.</p>
 </div>
 """, unsafe_allow_html=True)
