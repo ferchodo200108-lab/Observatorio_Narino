@@ -143,6 +143,9 @@ with st.sidebar:
     
     st.markdown("---")
     st.markdown("💡 *Los datos se actualizan automáticamente al cambiar los filtros.*")
+    st.markdown("---")
+    st.markdown("👨‍💻 **Desarrollado por:** EDGAR FERNANDO DOMINGUEZ TORRES")
+    st.markdown("🎓 *Programa de Economía - Universidad de Nariño*")
 
 # --- ÁREA PRINCIPAL ---
 tab1, tab2 = st.tabs(["📈 1. Análisis Exploratorio (EDA)", "🤖 2. Minería de Datos (IA)"])
